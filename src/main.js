@@ -18,7 +18,7 @@ const bottleMarkup = (i) => {
     <div class="layer shadow"></div>
     <img class="layer glass" src="${BASE}img/bottle-glass.webp" alt="" />
     <div class="layer juice"></div>
-    <img class="layer rim" src="${BASE}img/bottle-rim.webp" alt="" />
+    <img class="layer light" src="${BASE}img/bottle-light.webp" alt="" />
     <img class="layer cap" src="${BASE}img/bottle-cap.webp" alt="" />
     <div class="layer labels"><div class="label label-n"><small>50 ml · eau de parfum</small><strong>${s.label.join('<br />')}</strong></div></div>
   </div>`;
@@ -66,14 +66,16 @@ $$('a[href^="#"]').forEach((a) => a.addEventListener('click', (e) => {
 
 /* ── the story timeline ──────────────────────────────────────────────── */
 // One scrubbed timeline drives the sticky stage. Time units are arbitrary; the scroll length maps onto them.
-const layers = $$('#bottle .layer:not(.rim)');
+// transforms go on every layer; opacity is split because the highlight layer has its own strength per scene
+const layers = $$('#bottle .layer:not(.light)');
 const allLayers = $$('#bottle .layer');
-const rim = $('#bottle .rim');
+const light = $('#bottle .light');
+const LIGHT = [0.55, 0.8, 1];
 const bottle = $('#bottle');
 const scene = (i, sel) => $$(`.scene[data-i="${i}"] ${sel}`);
 const big = (i) => $(`.big-n[data-i="${i}"]`);
 const label = (i) => $(`.label-n[data-i="${i}"]`);
-const JUICE = ['rgba(232,150,72,.42)', 'rgba(255,170,130,.5)', 'rgba(120,52,26,.55)'];
+const JUICE = ['rgba(236,170,100,.28)', 'rgba(255,205,175,.22)', 'rgba(120,52,26,.5)'];
 const SCENE_AT = [3.3, 5.2, 7.1]; // when each scent lands
 
 const tl = gsap.timeline({ defaults: { ease: 'power2.inOut' }, scrollTrigger: { trigger: '.story', start: 'top top', end: 'bottom bottom', scrub: 0.8 } });
@@ -81,7 +83,8 @@ const tl = gsap.timeline({ defaults: { ease: 'power2.inOut' }, scrollTrigger: { 
 // hero → manifesto
 tl.to(['.hero-l', '.hero-r', '.scroll-cue'], { y: -40, opacity: 0, duration: 0.6, stagger: 0.05 }, 0.9)
   .to('.big-hero', { scale: 1.18, opacity: 0, duration: 1 }, 0.9)
-  .to(layers, { opacity: 0, scale: 0.9, filter: 'blur(16px)', duration: 0.8 }, 1.0)
+  .to(allLayers, { scale: 0.9, filter: 'blur(16px)', duration: 0.8 }, 1.0)
+  .to([...layers, light], { opacity: 0, duration: 0.8 }, 1.0)
   .to('.glow-0', { opacity: 0.5, duration: 0.8 }, 1.0)
   .to(mf, { opacity: 1, duration: 0.4 }, 1.5)
   .to('#manifesto .w', { opacity: 1, duration: 0.2, stagger: 0.045, ease: 'none' }, 1.6)
@@ -101,13 +104,16 @@ SCENTS.forEach((_, k) => {
     tl.to([big(i), ...scene(i, '.ann'), ...scene(i, '.copy-l, .copy-r')], { opacity: 0, y: -24, duration: 0.45, stagger: 0.03 }, SCENE_AT[k + 1] - 0.55)
       .to(label(i), { opacity: 0, duration: 0.3 }, SCENE_AT[k + 1] - 0.3)
       .to(label(i + 1), { opacity: 1, duration: 0.3 }, SCENE_AT[k + 1] - 0.1)
-      .to(layers, { scale: 0.94, y: 12, duration: 0.4, ease: 'power2.in' }, SCENE_AT[k + 1] - 0.5)
-      .to(layers, { scale: 1, y: 0, duration: 0.6, ease: 'power3.out' }, SCENE_AT[k + 1] - 0.1);
+      .to(allLayers, { scale: 0.94, y: 12, duration: 0.4, ease: 'power2.in' }, SCENE_AT[k + 1] - 0.5)
+      .to(allLayers, { scale: 1, y: 0, duration: 0.6, ease: 'power3.out' }, SCENE_AT[k + 1] - 0.1)
+      .to(light, { opacity: LIGHT[k + 1], duration: 0.8 }, SCENE_AT[k + 1] - 0.5);
   }
 });
 
 // bottle returns for scene one
-tl.fromTo(layers, { opacity: 0, scale: 0.9, y: 40, filter: 'blur(16px)' }, { opacity: 1, scale: 1, y: 0, filter: 'blur(0px)', duration: 0.9, ease: 'power3.out', immediateRender: false }, SCENE_AT[0] - 0.1)
+tl.fromTo(allLayers, { scale: 0.9, y: 40, filter: 'blur(16px)' }, { scale: 1, y: 0, filter: 'blur(0px)', duration: 0.9, ease: 'power3.out', immediateRender: false }, SCENE_AT[0] - 0.1)
+  .fromTo(layers, { opacity: 0 }, { opacity: 1, duration: 0.9, ease: 'power3.out', immediateRender: false }, SCENE_AT[0] - 0.1)
+  .fromTo(light, { opacity: 0 }, { opacity: LIGHT[0], duration: 0.9, ease: 'power3.out', immediateRender: false }, SCENE_AT[0] - 0.1)
   .to('.vf', { opacity: 1, duration: 0.6 }, SCENE_AT[0] + 0.2)
   .to('.glow-0', { opacity: 0, duration: 0.6 }, SCENE_AT[0] - 0.2)
   .to('.glow-1', { opacity: 1, duration: 0.8 }, SCENE_AT[0] - 0.2)
@@ -119,7 +125,6 @@ tl.fromTo(layers, { opacity: 0, scale: 0.9, y: 40, filter: 'blur(16px)' }, { opa
   .to('.bg-ink', { opacity: 1, duration: 0.9 }, SCENE_AT[2] - 0.6)
   .to('.glow-2', { opacity: 0, duration: 0.7 }, SCENE_AT[2] - 0.5)
   .to('.glow-3', { opacity: 1, duration: 0.8 }, SCENE_AT[2] - 0.3)
-  .to(rim, { opacity: 0.85, duration: 0.8 }, SCENE_AT[2] - 0.4)
   .to('.shadow', { opacity: 0, duration: 0.5 }, SCENE_AT[2] - 0.5)
   // finale: everything leaves, one line stays
   .to([big(3), ...scene(3, '.ann'), ...scene(3, '.copy-l, .copy-r'), '.vf'], { opacity: 0, y: -24, duration: 0.5, stagger: 0.03 }, 8.7)

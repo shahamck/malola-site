@@ -117,20 +117,23 @@ html[data-nav='dark'] .nav { color: var(--paper); }
 .layer { position: absolute; inset: 0; width: 100%; height: 100%; animation: float 6s ease-in-out infinite; }
 @keyframes float { 50% { translate: 0 -10px; } }
 .glass { mix-blend-mode: multiply; }
-.rim { mix-blend-mode: screen; opacity: 0; }
+.light { mix-blend-mode: screen; opacity: .55; }
 .juice { background: var(--juice); mix-blend-mode: multiply; -webkit-mask: url(/img/bottle-body.webp) center / 100% 100%; mask: url(/img/bottle-body.webp) center / 100% 100%; }
 .shadow { inset: auto -30% -3% -30%; height: 12%; width: auto; background: radial-gradient(closest-side, rgba(60,40,25,.32), transparent); mix-blend-mode: multiply; }
 .label {
-  position: absolute; left: 30.4%; top: 45%; width: 63.9%; height: 25.4%;
-  background: linear-gradient(90deg, #E9E6E1, #F7F5F1 30%, #F3F1ED 75%, #DCD8D2);
-  color: #161413; padding: 9% 8% 8%; display: flex; flex-direction: column; justify-content: space-between;
-  box-shadow: 0 0 0 .5px rgba(0,0,0,.06);
+  position: absolute; left: 29.64%; top: 44.71%; width: 66.07%; height: 26.14%;
+  /* flat front, then the paper wrapping round the right edge of the bottle */
+  background: linear-gradient(90deg, #E2DED8 0, #F3F1ED 5%, #F5F3EF 62%, #EEEBE6 82%, #DAD5CE 94%, #C9C3BA 100%);
+  color: #161413; padding: 9% 9% 8% 8%; display: flex; flex-direction: column; justify-content: space-between;
+  box-shadow: -1px 0 1px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.08);
+  overflow: hidden;
 }
+.label::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.5) 42%, transparent 54%); mix-blend-mode: soft-light; pointer-events: none; }
 .label small { font: 600 calc(var(--bh) * .0085)/1 var(--sans); font-variation-settings: 'wdth' 110; letter-spacing: .14em; text-transform: uppercase; }
 .label-0 { align-items: center; justify-content: center; gap: 14%; }
 .label-0 .pov { font-size: calc(var(--bh) * .045); }
 .label-n { opacity: 0; }
-.label-n strong { align-self: flex-end; text-align: right; font: 800 calc(var(--bh) * .032)/.9 var(--sans); font-variation-settings: 'wdth' 70; text-transform: uppercase; letter-spacing: -.01em; }
+.label-n strong { align-self: flex-end; text-align: right; margin-right: 6%; font: 800 calc(var(--bh) * .036)/.9 var(--sans); font-variation-settings: 'wdth' 70; text-transform: uppercase; letter-spacing: -.01em; }
 
 /* viewfinder corners around the bottle */
 .vf { position: absolute; left: 50%; top: calc(50% + 2vh); width: calc(var(--bw) + 16vw); height: calc(var(--bh) + 8vh); translate: -50% -50%; opacity: 0; pointer-events: none; color: var(--ink); transition: color .6s; }
@@ -233,12 +236,16 @@ html[data-nav='dark'] .nav { color: var(--paper); }
 .card[data-i='2'] { background: var(--orange); }
 .card[data-i='3'] { background: var(--ink); color: var(--paper); }
 .card .n { position: absolute; left: 24px; top: 20px; font: 700 13px/1 var(--mark); }
-.card .bottle { position: relative; left: auto; top: auto; --bh: 330px; margin: 8px 0 30px; }
+.card .bottle { position: relative; left: auto; top: auto; --bh: 380px; --bw: 152px; margin: 8px 0 30px; }
+.card[data-i='2'] .n .colon b { background: var(--ink); }
 .card .layer { animation: none; transition: transform .7s cubic-bezier(.2,.7,.2,1); }
-.card:hover .layer { transform: translateY(-10px) rotate(-2deg); }
+.card:hover .layer { transform: translateY(-10px); }
 .card .label-0 { display: none; }
 .card .label-n { opacity: 1; }
-.card[data-i='3'] .rim { opacity: .9; }
+.card[data-i='1'] .bottle { --juice: rgba(236,170,100,.28); }
+.card[data-i='2'] .light { opacity: .8; }
+.card[data-i='3'] .light { opacity: 1; }
+.card[data-i='3'] .shadow { opacity: 0; }
 .card h3 { margin: 0 0 10px; font: 700 34px/.92 var(--sans); font-variation-settings: 'wdth' 72; text-transform: uppercase; }
 .card p { font-size: 14px; max-width: 26ch; margin-bottom: 26px; flex: 1; }
 .card[data-i='3'] .btn { background: var(--paper); color: var(--ink); }
